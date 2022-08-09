@@ -28,6 +28,10 @@ int _printf(const char *format, ...)
 					printed++;
 					i += 2;
 					break;
+				case 's':
+					printed += _print_string(args);
+					i += 2;
+					break;
 				default:
 					_putchar(format[i]);
 					_putchar(format[i + 1]);
