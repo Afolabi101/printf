@@ -3,48 +3,45 @@
 /**
  * _printf - prints anything
  * @format: the format string
+ *
  * Return: the number of characters printed
  */
-
 int _printf(const char *format, ...)
 {
-	int i = 0;
-	int printed = 0;
 	va_list args;
+	printer printer;
+	int i = 0;
+	int characters_printed = 0;
 
 	va_start(args, format);
 	while (format[i])
 	{
-		while (format[i] == '%')
+		for (; format[i] != '%' && format[i]; i++)
 		{
-			switch (format[i + 1])
-			{
-				case 'c':
-					printed += _print_char(args);
-					i += 2;
-					break;
-				case '%':
-					_putchar('%');
-					printed++;
-					i += 2;
-					break;
-				case 's':
-					printed += _print_string(args);
-					i += 2;
-					break;
-				default:
-					_putchar(format[i]);
-					_putchar(format[i + 1]);
-					i += 2;
+			_putchar(format[i]);
+			characters_printed++;
 		}
-		}
-		if (format[i])
+
+		if (!format[i])
+			break;
+
+		printer = _get_printer(&format[i + 1]);
+		if (printer.specifier != NULL)
 		{
+			characters_printed += printer.run(args);
+			i += 2; /* move past the specifier */
+			continue;
+		}
+
 		_putchar(format[i]);
-		printed++;
-		}
-		i++;
+		characters_printed++;
+
+		if (format[i + 1] == '%')
+			i += 2; /* move past the % */
+		else
+			i++;
 	}
+
 	va_end(args);
-	return (printed);
+	return (characters_printed);
 }
